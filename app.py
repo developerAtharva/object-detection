@@ -42,25 +42,25 @@ async def predict(file: UploadFile = File(...)):
     image_bytes = await file.read()
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
 
-        # Run prediction
-        results = model(image)
+    # Run prediction
+    results = model(image)
 
-        predictions = []
+    predictions = []
 
-        for result in results:
-            boxes = result.boxes
-            for box in boxes:
-                class_id = int(box.cls[0].tolist())
-                class_name = class_names[class_id]
-                coords = box.xyxy[0].tolist()
-                predictions.append({
-                    "class": class_name,
-                    "coordinates": {
-                        "x1": coords[0],
-                        "y1": coords[1],
-                        "x2": coords[2],
-                        "y2": coords[3]
-                    }
-                })
+    for result in results:
+        boxes = result.boxes
+        for box in boxes:
+            class_id = int(box.cls[0].tolist())
+            class_name = class_names[class_id]
+            coords = box.xyxy[0].tolist()
+            predictions.append({
+                "class": class_name,
+                "coordinates": {
+                    "x1": coords[0],
+                    "y1": coords[1],
+                    "x2": coords[2],
+                    "y2": coords[3]
+                }
+            })
 
-        return JSONResponse(content={"predictions": predictions})
+    return JSONResponse(content={"predictions": predictions})
