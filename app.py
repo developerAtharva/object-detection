@@ -7,6 +7,8 @@ from pydantic import BaseModel
 from typing import List
 from ultralytics import YOLO
 from fastapi.responses import JSONResponse
+from PIL import Image
+import io
 
 
 import os
@@ -35,19 +37,13 @@ class_names = model.names
 
 app = FastAPI()
 
-class ImageRequest(BaseModel):
-    image_base64: str
-
 @app.post("/predict")
-async def predict(request: ImageRequest):
-    try:
-        # Decode the base64 image
-        image_data = base64.b64decode(request.image_base64)
-        nparr = np.frombuffer(image_data, np.uint8)
-        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+async def predict(file: UploadFile = File(...)):
+    image_bytes = await file.read()
+    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
 
         # Run prediction
-        results = model.predict(img, conf=0.25, line_width=1)
+        results = model(image)
 
         predictions = []
 
@@ -68,6 +64,3 @@ async def predict(request: ImageRequest):
                 })
 
         return JSONResponse(content={"predictions": predictions})
-
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
