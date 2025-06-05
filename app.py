@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 import os
 import requests
 
-MODEL_URL = "https://drive.google.com/uc?export=download&id=1vXoSUu18vffJL34h65nV3jSwEvblvT43"
+MODEL_URL = "https://huggingface.co/developerAtharva/YOLO/resolve/main/best_new.pt"
 MODEL_PATH = "models/best_new.pt"
 
 # Ensure models/ directory exists
